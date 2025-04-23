@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚀 Space Trivia Galaxy: Galactic Mission</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000 url('https://www.solarsystemscope.com/textures/download/2k_stars_milky_way.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      overflow-x: hidden;
+      transition: background-image 2s ease-in-out;
+    }
+    .game-container {
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+      animation: fadeIn 1.2s ease-in-out;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+    h2 {
+      margin: 20px 0 10px;
+      color: #ffe600;
+    }
+    input[type="text"] {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    .character-select {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .character-option {
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 5px;
+      cursor: pointer;
+      transition: border 0.3s;
+    }
+    .character-option.selected {
+      border-color: #00e5ff;
+    }
+    .character-option img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #03a9f4;
+      color: white;
+      transition: background 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background-color: #0288d1;
+      transform: scale(1.05);
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    .next-btn {
+      margin-top: 20px;
+      background-color: #4caf50;
+    }
+    .scoreboard, .timer {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      text-align: right;
+    }
+    .popup {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      animation: popIn 0.5s ease forwards;
+    }
+    .hidden {
+      display: none;
+    }
+    .storyline {
+      margin: 15px 0 25px;
+      font-style: italic;
+      color: #ccc;
+    }
+    audio {
+      display: none;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    @keyframes popIn {
+      0% {opacity: 0; transform: scale(0.6);}
+      100% {opacity: 1; transform: scale(1);}
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #00e5ff, 0 0 20px #00e5ff; }
+      to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bg-music" autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_44b21f9a43.mp3" type="audio/mp3">
+  </audio>
+  <audio id="correct-sound" src="https://www.soundjay.com/button/sounds/button-4.mp3"></audio>
+  <audio id="wrong-sound" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+
+  <div class="game-container">
+    <div id="intro">
+      <h1>🚀 Space Trivia Galaxy</h1>
+      <p class="storyline">Commander, choose your star identity and prepare to chart the unknown!</p>
+      <input type="text" id="player-name" placeholder="Enter your codename" />
+      <div class="character-select">
+        <div class="character-option" onclick="selectCharacter('nova')">
+          <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Nova" alt="Nova">
+        </div>
+        <div class="character-option" onclick="selectCharacter('astro')">
+          <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Astro" alt="Astro">
+        </div>
+        <div class="character-option" onclick="selectCharacter('luna')">
+          <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna" alt="Luna">
+        </div>
+      </div>
+      <button onclick="startGame()">Launch Mission</button>
+    </div>
+
+    <div id="game-section" class="hidden">
+      <div class="scoreboard" id="scoreboard"></div>
+      <div class="timer" id="timer"></div>
+      <div id="game"></div>
+      <div id="popup" class="popup hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const quiz = [
+      [
+        { question: "Which planet is known as the Red Planet?", options: ["Venus", "Mars", "Jupiter", "Mercury"], answer: "Mars" },
+        { question: "What galaxy is Earth located in?", options: ["Andromeda", "Sombrero", "Milky Way", "Whirlpool"], answer: "Milky Way" }
+      ],
+      [
+        { question: "What is the largest planet in our solar system?", options: ["Saturn", "Neptune", "Jupiter", "Earth"], answer: "Jupiter" },
+        { question: "How long does it take the Earth to orbit the Sun?", options: ["365 days", "24 hours", "30 days", "6 months"], answer: "365 days" }
+      ],
+      [
+        { question: "Who was the first person to walk on the moon?", options: ["Buzz Aldrin", "Yuri Gagarin", "Neil Armstrong", "Alan Shepard"], answer: "Neil Armstrong" },
+        { question: "Which planet has the most moons?", options: ["Mars", "Jupiter", "Saturn", "Uranus"], answer: "Saturn" }
+      ]
+    ];
+
+    let level = 0;
+    let current = 0;
+    let score = 0;
+    let player = '';
+    let character = '';
+    let timer;
+    let timeLeft = 20;
+
+    function selectCharacter(id) {
+      character = id;
+      document.querySelectorAll('.character-option').forEach(el => el.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
+    }
+
+    function startGame() {
+      player = document.getElementById("player-name").value || "Astronaut";
+      if (!character) character = 'nova';
+      document.getElementById("intro").classList.add("hidden");
+      document.getElementById("game-section").classList.remove("hidden");
+      document.getElementById("scoreboard").textContent = `🧑‍🚀 Commander ${player} (${character}) | Score: ${score} | Level: ${level + 1}`;
+      renderQuestion();
+    }
+
+    function updateScoreboard() {
+      document.getElementById("scoreboard").textContent = `🧑‍🚀 Commander ${player} (${character}) | Score: ${score} | Level: ${level + 1}`;
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timeLeft = 20;
+      document.getElementById("timer").textContent = `⏱️ Time left: ${timeLeft}`;
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = `⏱️ Time left: ${timeLeft}`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          checkAnswer(null);
+        }
+      }, 1000);
+    }
+
+    function renderQuestion() {
+      updateScoreboard();
+      const q = quiz[level][current];
+      let html = `<h2>Question ${current + 1}</h2><p>${q.question}</p>`;
+      html += q.options.map(opt => `<button class='answer-btn' data-choice="${opt}">${opt}</button>`).join('');
+      document.getElementById('game').innerHTML = html;
+      document.querySelectorAll('.answer-btn').forEach(btn => {
+        btn.addEventListener('click', () => checkAnswer(btn.getAttribute('data-choice')));
+      });
+      startTimer();
+    }
+
+    function checkAnswer(choice) {
+      clearInterval(timer);
+      const correct = quiz[level][current].answer;
+      const feedback = document.createElement('div');
+      feedback.className = 'result';
+
+      if (choice === correct) {
+        score++;
+        document.getElementById('correct-sound').play();
+        feedback.textContent = `✅ Correct! It was ${correct}.`;
+      } else {
+        document.getElementById('wrong-sound').play();
+        feedback.textContent = `❌ Incorrect! The correct answer was ${correct}.`;
+      }
+
+      document.getElementById('game').appendChild(feedback);
+
+      const nextBtn = document.createElement('button');
+      nextBtn.textContent = current < quiz[level].length - 1 ? 'Next Question' : (level < quiz.length - 1 ? 'Next Planet' : 'Complete Mission');
+      nextBtn.className = 'next-btn';
+      nextBtn.addEventListener('click', nextStep);
+      document.getElementById('game').appendChild(nextBtn);
+
+      document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+      updateScoreboard();
+    }
+
+    function nextStep() {
+      current++;
+      if (current < quiz[level].length) {
+        renderQuestion();
+      } else {
+        level++;
+        current = 0;
+        if (level < quiz.length) {
+          showPopup(`🪐 You've reached the next planet! Prepare for Level ${level + 1}!`);
+          setTimeout(() => {
+            hidePopup();
+            renderQuestion();
+          }, 2500);
+        } else {
+          showPopup(`🎉 Mission Complete, Commander ${player} (${character})! Final Score: ${score}`);
+          document.getElementById('game').innerHTML = '';
+          document.getElementById('scoreboard').remove();
+          document.getElementById('timer').remove();
+        }
+      }
+    }
+
+    function showPopup(message) {
+      const popup = document.getElementById('popup');
+      popup.innerHTML = message;
+      popup.classList.remove('hidden');
+    }
+
+    function hidePopup() {
+      document.getElementById('popup').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

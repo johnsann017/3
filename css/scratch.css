@@ -1,0 +1,42 @@
+<style>
+header {
+background-color: #333;
+color: white;
+padding: 20px;
+text-align: center;
+}
+body {
+background-image: url(https://www.vecteezy.com/photo/31974953-beautiful-light-star-shimmering-particles-with-light-lens-flare-on-black-sky-background-in-rotation-motion-graphic-animation-of-dynamic-get-up-in-wind-bokeh-particles-abstract-galaxy-digital-intro);
+font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+background-color: #afccdf;
+color:#2b4760;
+margin: 0;
+padding: 20px;
+}
+
+.box1 {
+    background-color: #ffdddd;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+    color: #660000;
+  }
+  
+  .box2 {
+    background-color: #ddffdd;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+    color: #006600;
+  }
+  
+  .box3 {
+    background-color: #ddeeff;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+    color: #003366;
+  }
+  
+
+</style>
